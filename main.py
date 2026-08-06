@@ -64,3 +64,8 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     db.delete(book)
     db.commit()
     return None
+
+from app.admin import setup_admin
+from app.database import engine
+
+setup_admin(app, engine)
