@@ -15,3 +15,6 @@ def setup_admin(app, engine):
     admin = Admin(app, engine, title="Books Admin")
     admin.add_view(BookAdmin)
     return admin
+
+class BookAdmin(ModelView, model=Book):
+    column_list = [Book.id, Book.title, Book.year, Book.summary]
