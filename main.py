@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
-from app.models import Book
+from app.models import Author, Book
 
 app = FastAPI(title="Books API")
 
@@ -36,6 +36,7 @@ def create_book(payload: BookCreate, db: Session = Depends(get_db)):
         title=payload.title,
         author=payload.author,
         year=payload.year,
+        summary=payload.summary,
     )
     db.add(book)
     db.commit()
@@ -51,6 +52,7 @@ def update_book(book_id: int, payload: BookCreate, db: Session = Depends(get_db)
     book.title = payload.title
     book.author = payload.author
     book.year = payload.year
+    book.summary = payload.summary
 
     db.commit()
     db.refresh(book)
@@ -70,3 +72,11 @@ from app.admin import setup_admin
 from app.database import engine
 
 setup_admin(app, engine)
+class AuthorCreate(BaseModel):
+    name: str
+
+class BookCreate(BaseModel):
+    title: str
+    year: int
+    summary: str | None = None
+    author_id: int | None = None

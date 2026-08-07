@@ -5,6 +5,7 @@ from alembic import context
 
 from app.database import Base, engine, DATABASE_URL
 from app.models import Book  # noqa
+from app.models import Author, Book  # noqa: F401
 
 config = context.config
 fileConfig(config.config_file_name)
