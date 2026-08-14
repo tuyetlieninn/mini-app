@@ -1,6 +1,12 @@
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
+from typing import List
+
+
+
+# trong class Author, thêm:
+# TODO: books = relationship("Book", back_populates="author")
 
 class Author(Base):
     __tablename__ = "authors"
@@ -10,3 +16,4 @@ class Author(Base):
     bio: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     country: Mapped[str | None] = mapped_column(String(100), nullable=True)
     birth_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    books: Mapped[List["Book"]] = relationship("Book", back_populates="author")

@@ -4,8 +4,8 @@ from app.admin import setup_admin
 from app.core.config import get_settings
 from app.db.database import Base
 from app.db.session import engine
-from app.api.routers import authors
-from app.models import Author  # noqa: F401
+from app.api.routers import authors, books
+from app.models import Author, Book  # noqa: F401
 
 settings = get_settings()
 app = FastAPI(title=settings.app_title)
@@ -20,3 +20,4 @@ def root() -> dict[str, str]:
 
 
 app.include_router(authors.router, prefix="/api/v1")
+app.include_router(books.router, prefix="/api/v1")
