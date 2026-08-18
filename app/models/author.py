@@ -1,19 +1,13 @@
-from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
-from typing import List
-
-
-
-# trong class Author, thêm:
-# TODO: books = relationship("Book", back_populates="author")
 
 class Author(Base):
     __tablename__ = "authors"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(200), nullable=False)
-    bio: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    birth_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    books: Mapped[List["Book"]] = relationship("Book", back_populates="author")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    bio: Mapped[str | None]
+    country: Mapped[str | None]
+    birth_year: Mapped[int | None]
+
+    books: Mapped[list["Book"]] = relationship("Book", back_populates="author")

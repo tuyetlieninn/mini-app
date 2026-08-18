@@ -5,12 +5,17 @@ class BookCreate(BaseModel):
     year: int = Field(ge=1000, le=2100)
     summary: str | None = Field(default=None, max_length=500)
     author_id: int | None = None
+    category_id: int | None = None
+
 
 class BookUpdate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     year: int = Field(ge=1000, le=2100)
     summary: str | None = Field(default=None, max_length=500)
     author_id: int | None = None
+    category_id: int | None = None
+
+
 
 class BookRead(BaseModel):
     id: int
@@ -19,5 +24,8 @@ class BookRead(BaseModel):
     summary: str | None
     author_id: int | None
     author_name: str | None = None
+    category_name: str | None = None
 
     model_config = {"from_attributes": True}
+    
+
