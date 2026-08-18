@@ -5,6 +5,42 @@ from fastapi import HTTPException
 from app.models import Book, Author, Category
 from app.schemas.book import BookRead, BookCreate, BookUpdate
 
+def search_books(
+    db: Session,
+    author_id: int | None = None,
+    category_id: int | None = None,
+    year_from: int | None = None,
+    year_to: int | None = None,
+    q: str | None = None,
+) -> list[BookRead]:
+
+    stmt = (
+        select(Book)
+        .options(
+            joinedload(Book.author),
+            joinedload(Book.category),
+        )
+        .order_by(Book.id)
+    )
+
+    if author_id is not None:
+        stmt = stmt.where(Book.author_id == author_id)
+
+    if category_id is not None:
+        stmt = stmt.where(Book.category_id == category_id)
+
+    if year_from is not None:
+        stmt = stmt.where(Book.year >= year_from)
+
+    if year_to is not None:
+        stmt = stmt.where(Book.year <= year_to)
+
+    if q:
+        stmt = stmt.where(Book.title.ilike(f"%{q}%"))
+
+    books = db.scalars(stmt).all()
+    return [to_book_read(book) for book in books]
+
 
 def to_book_read(book: Book) -> BookRead:
     return BookRead(
