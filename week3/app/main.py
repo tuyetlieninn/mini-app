@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.admin import setup_admin
 from app.api.routers import books
+from app.api.routers.users import router as user_router
 from app.core.config import get_settings
 from app.db.database import Base
 from app.db.session import engine
@@ -10,6 +11,7 @@ from app.models import Book  # noqa: F401
 
 settings = get_settings()
 app = FastAPI(title=settings.app_title)
+app.include_router(user_router, prefix="/api/v1")
 
 app.add_middleware(
     CORSMiddleware,
