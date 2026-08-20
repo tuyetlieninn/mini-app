@@ -16,3 +16,11 @@ class UserUpdate(BaseModel):
     username: str | None = None
     password: str | None = None
     role: int | None = None
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

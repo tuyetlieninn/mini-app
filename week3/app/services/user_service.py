@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate
-from app.core.security import hash_password
+from app.core.security import hash_password, verify_password, create_access_token
 
 def list_users(db: Session) -> list[UserRead]:
     users = db.query(User).order_by(User.id).all()
@@ -34,15 +34,15 @@ def update_user(db: Session, user_id: int, payload: UserUpdate) -> UserRead:
         raise HTTPException(status_code=404, detail="User not found")
 
     if payload.username:
-        if db.query(User).filter(User.username == payload.username).first():
+        existing = db.query(User).filter(User.username == payload.username).first()
+        if existing and existing.id != user_id:
             raise HTTPException(status_code=409, detail="Username already exists")
-        user.username = payload.username
+    update_data = payload.model_dump(exclude_unset=True)
 
-    if payload.password:
-        user.hashed_password = hash_password(payload.password)
-
-    if payload.role is not None:
-        user.role = payload.role
+    for field, value in update_data.items():
+        if field == "password":
+            value = hash_password(value)
+        setattr(user, field, value)
 
     db.commit()
     db.refresh(user)
@@ -54,3 +54,15 @@ def delete_user(db: Session, user_id: int) -> None:
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(user)
     db.commit()
+    
+def get_user_by_username(db: Session, username: str) -> User | None:
+    return db.query(User).filter(User.username == username).first()
+
+
+def login(db: Session, username: str, password: str) -> str:
+    user = get_user_by_username(db, username)
+
+    if user is None or not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+
+    return create_access_token(user.username)
